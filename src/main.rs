@@ -1,7 +1,8 @@
-use std::array;
 use std::env;
 use std::fs;
 use std::io::{self, BufRead};
+
+const CARD_RANKS: &str = "J23456789TQKA";
 
 #[derive(Debug, PartialEq, PartialOrd, Eq, Ord)]
 enum CamelCardHandRank {
@@ -22,10 +23,9 @@ struct CamelCardHand {
 impl CamelCardHand {
 
     fn hand_rank(&self) -> CamelCardHandRank {
-        let card_ranks = String::from("J23456789TQKA");
         let mut counts: [u8; 14] = [0; 14];
         for card in self.cards.iter() {
-            counts[card_ranks.find(*card).expect("Invalid rank!")] += 1;
+            counts[CARD_RANKS.find(*card).expect("Invalid rank!")] += 1;
         }
 
         let j_count = counts[0];  // transfer joker count to highest count
@@ -78,8 +78,7 @@ fn main() {
             h.hand_rank(), 
             h.cards.iter().enumerate().map(|(i, c)| {
                 let factor: usize = 100;
-                let card_ranks = String::from("J23456789TQKA");
-                card_ranks.find(*c).unwrap() * factor.pow(4 - i as u32)
+                CARD_RANKS.find(*c).unwrap() * factor.pow(4 - i as u32)
             }).sum(),  // encode card ranks into a single usize
         h.bid))
         .collect();
